@@ -1,75 +1,84 @@
 import streamlit as st
 
 # Configuración de la página
-st.set_page_config(page_title="🪖 Gases Ideales en Operaciones Militares", layout="centered")
-st.title("🪖 Calculadora Militar de Gases Ideales (PV = nRT)")
+st.set_page_config(page_title="🪖 Gases Ideales para Uso Militar", layout="centered")
 
-st.image("https://i.imgur.com/1uKx2pw.jpg", caption="Simulación táctica con uso de oxígeno en altura", use_column_width=True)
+# Título e ilustración
+st.title("🪖 Aplicación Militar de Gases Ideales")
+st.image(
+    "https://i.imgur.com/1uKx2pw.jpg",
+    caption="Simulación táctica con uso de oxígeno en altura",
+    use_container_width=True
+)
 
+# Introducción
 st.markdown("""
-### 🎖️ Aplicación en el Contexto Militar
+## 🎖️ Uso Estratégico de la Ley de los Gases Ideales
 
-Este aplicativo permite calcular cualquiera de las variables de la ecuación de gases ideales, lo que es **esencial en operaciones** donde:
-- Se necesita **oxígeno suplementario** en altura.
-- Se usan **gases químicos** en simulaciones o entrenamiento CBRN.
-- Se calcula la **autonomía de cilindros de oxígeno** en evacuaciones.
+Esta herramienta permite calcular variables clave en situaciones donde los **gases** (como oxígeno, nitrógeno o CO₂) son vitales para:
 
-**Ecuación base:**
+- Misiones a gran altitud (donde el oxígeno escasea).
+- Evaluación de autonomía de cilindros de aire en rescates.
+- Entrenamiento CBRN (Químico, Biológico, Radiológico y Nuclear).
+- Operaciones en entornos cerrados o submarinos.
+
+**Ley de los Gases Ideales:**
 \[
 PV = nRT
 \]
+Donde:
+- `P` = Presión (atm)
+- `V` = Volumen (L)
+- `n` = Cantidad de sustancia (mol)
+- `R` = Constante (0.0821 L·atm/mol·K)
+- `T` = Temperatura absoluta (K)
 """)
 
-# Constante universal
-R = 0.0821  # L·atm/mol·K
+R = 0.0821  # Constante universal de los gases en L·atm/mol·K
 
-# Elegir qué variable calcular
-st.subheader("🛠️ Selecciona qué variable deseas calcular")
-opcion = st.selectbox("Variable a calcular:", ["Presión (P)", "Volumen (V)", "Moles (n)", "Temperatura (T)"])
+# Selección de variable a calcular
+st.subheader("🛠️ Selecciona la variable a calcular")
+opcion = st.selectbox("¿Qué deseas calcular?", ["Presión (P)", "Volumen (V)", "Cantidad de sustancia (n)", "Temperatura (T)"])
 
-# Descripciones por variable
-descripciones = {
-    "Presión (P)": "Se usa para determinar la presión necesaria para mantener un gas en un volumen controlado. Útil en tanques o recintos cerrados.",
-    "Volumen (V)": "Calcula el volumen que ocupará un gas. Útil para estimar el espacio en cilindros o refugios presurizados.",
-    "Moles (n)": "Determina cuánta sustancia de gas se necesita. Útil para calcular el suministro de oxígeno.",
-    "Temperatura (T)": "Estima la temperatura en un sistema cerrado. Útil en simulaciones o cámaras hiperbáricas."
-}
-st.info(descripciones[opcion])
-
-# Entrada de datos según variable elegida
-st.subheader("📋 Ingrese los datos conocidos")
+# Variables de entrada con sliders (sólo numéricas)
+st.subheader("📋 Ingrese los valores conocidos")
 
 if opcion == "Presión (P)":
-    V = st.slider("Volumen (L)", 1.0, 100.0, 20.0)
-    n = st.slider("Moles (n)", 0.1, 10.0, 2.0)
-    T = st.slider("Temperatura (K)", 250, 400, 298)
+    volumen = st.slider("Volumen (L)", 1.0, 100.0, 20.0)
+    moles = st.slider("Cantidad de sustancia (mol)", 0.1, 10.0, 2.0)
+    temperatura = st.slider("Temperatura (K)", 250, 400, 298)
     if st.button("📌 Calcular Presión"):
-        P = (n * R * T) / V
-        st.success(f"🧮 Presión: {P:.3f} atm")
+        presion = (moles * R * temperatura) / volumen
+        st.success(f"✅ **Presión:** {presion:.3f} atm")
 
 elif opcion == "Volumen (V)":
-    P = st.slider("Presión (atm)", 0.5, 10.0, 1.0)
-    n = st.slider("Moles (n)", 0.1, 10.0, 2.0)
-    T = st.slider("Temperatura (K)", 250, 400, 298)
+    presion = st.slider("Presión (atm)", 0.5, 10.0, 1.0)
+    moles = st.slider("Cantidad de sustancia (mol)", 0.1, 10.0, 2.0)
+    temperatura = st.slider("Temperatura (K)", 250, 400, 298)
     if st.button("📌 Calcular Volumen"):
-        V = (n * R * T) / P
-        st.success(f"🧮 Volumen: {V:.3f} L")
+        volumen = (moles * R * temperatura) / presion
+        st.success(f"✅ **Volumen:** {volumen:.3f} L")
 
-elif opcion == "Moles (n)":
-    P = st.slider("Presión (atm)", 0.5, 10.0, 1.0)
-    V = st.slider("Volumen (L)", 1.0, 100.0, 20.0)
-    T = st.slider("Temperatura (K)", 250, 400, 298)
+elif opcion == "Cantidad de sustancia (n)":
+    presion = st.slider("Presión (atm)", 0.5, 10.0, 1.0)
+    volumen = st.slider("Volumen (L)", 1.0, 100.0, 20.0)
+    temperatura = st.slider("Temperatura (K)", 250, 400, 298)
     if st.button("📌 Calcular Moles"):
-        n = (P * V) / (R * T)
-        st.success(f"🧮 Moles: {n:.4f} mol")
+        moles = (presion * volumen) / (R * temperatura)
+        st.success(f"✅ **Cantidad de sustancia:** {moles:.4f} mol")
 
 elif opcion == "Temperatura (T)":
-    P = st.slider("Presión (atm)", 0.5, 10.0, 1.0)
-    V = st.slider("Volumen (L)", 1.0, 100.0, 20.0)
-    n = st.slider("Moles (n)", 0.1, 10.0, 2.0)
+    presion = st.slider("Presión (atm)", 0.5, 10.0, 1.0)
+    volumen = st.slider("Volumen (L)", 1.0, 100.0, 20.0)
+    moles = st.slider("Cantidad de sustancia (mol)", 0.1, 10.0, 2.0)
     if st.button("📌 Calcular Temperatura"):
-        T = (P * V) / (n * R)
-        st.success(f"🧮 Temperatura: {T:.2f} K")
+        temperatura = (presion * volumen) / (moles * R)
+        st.success(f"✅ **Temperatura:** {temperatura:.2f} K")
 
+# Pie de página
 st.markdown("---")
-st.markdown("🔧 Esta herramienta es útil para operaciones logísticas, de salud y entrenamiento militar en ambientes controlados o extremos.")
+st.markdown("""
+🔍 **Nota:** Esta aplicación está diseñada para fines académicos y estratégicos. Adaptada para entornos militares donde se requiere **precisión en el uso de gases**.
+
+🧠 ¿Quieres calcular la **autonomía de oxígeno** de un cilindro en una patrulla? Pide la siguiente versión avanzada.
+""")
