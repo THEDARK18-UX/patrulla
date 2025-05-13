@@ -8,6 +8,7 @@ st.markdown("Calculadora adaptada para situaciones militares en altura, presión
 st.markdown("---")
 
 st.subheader("🔧 Seleccione qué desea calcular:")
+st.info("La variable selecionada permenecerá constante en el campo indicado")
 opcion = st.selectbox("Variable desconocida:", ["Cantidad de sustancia (n)", "Presión (P)", "Volumen (V)", "Temperatura (T)"])
 
 # Entrada de datos
