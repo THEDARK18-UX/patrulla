@@ -1,64 +1,60 @@
 import streamlit as st
 
-# Configuración de la página
-st.set_page_config(page_title="💨 Ley de Gases Ideales - Militar", layout="centered")
-st.title("💨 Cálculo con la Ley de Gases Ideales - Aplicación Militar")
+st.set_page_config(page_title="📐 Gases Ideales Militares", layout="centered")
 
-st.markdown("""
-Esta aplicación permite calcular una de las variables de la ley de los gases ideales (**PV = nRT**), útil para situaciones como operaciones en altura donde se utiliza oxígeno comprimido.
+st.title("🎖️ Aplicación Militar - Ley de los Gases Ideales (PV = nRT)")
+st.markdown("Calculadora de gases ideales adaptada a condiciones de **altura, presión y logística militar**.")
 
-- **P**: Presión (atm)
-- **V**: Volumen (L)
-- **n**: Moles de gas (mol)
-- **R**: Constante universal de los gases = 0.0821 L·atm/mol·K
-- **T**: Temperatura (K)
-""")
+st.markdown("---")
 
-R = 0.0821
+st.subheader("🔧 Seleccione qué desea calcular:")
+opcion = st.selectbox("Variable desconocida:", ["Cantidad de sustancia (n)", "Presión (P)", "Volumen (V)", "Temperatura (T)"])
 
-opciones = ["Cantidad de sustancia (n)", "Presión (P)", "Volumen (V)", "Temperatura (T)"]
-calculo = st.selectbox("¿Qué deseas calcular?", opciones)
+# Entrada de datos
+col1, col2 = st.columns(2)
 
-# Entrada de datos según opción
-if calculo != "Cantidad de sustancia (n)":
-    n = st.number_input("Cantidad de sustancia (n) [mol]", min_value=0.0, format="%.4f")
-if calculo != "Presión (P)":
-    V = st.number_input("Volumen (V) [L]", min_value=0.0, format="%.2f")
-if calculo != "Volumen (V)":
-    P = st.number_input("Presión (P) [atm]", min_value=0.0, format="%.2f")
-if calculo != "Temperatura (T)":
-    T = st.number_input("Temperatura (T) [K]", min_value=1.0, format="%.2f")
+with col1:
+    P = st.number_input("Presión (atm)", min_value=0.0, value=1.0, step=0.1, format="%.2f")
+    V = st.number_input("Volumen (L)", min_value=0.0, value=1.0, step=0.1, format="%.2f")
+with col2:
+    T = st.number_input("Temperatura (K)", min_value=1.0, value=273.15, step=0.1, format="%.2f")
+    R = st.number_input("Constante R (L·atm/mol·K)", value=0.0821, format="%.4f")
 
 resultado = None
-verificacion = ""
+formula_utilizada = ""
 
-if st.button("🧮 Calcular"):
+if st.button("📌 Calcular"):
     try:
-        if calculo == "Cantidad de sustancia (n)":
+        if opcion == "Cantidad de sustancia (n)":
             resultado = (P * V) / (R * T)
-            verificacion = f"n = (P × V) / (R × T)\n  = ({P} × {V}) / ({R} × {T})\n  = {P*V:.4f} / {R*T:.4f}\n  = {resultado:.4f} mol"
-        elif calculo == "Presión (P)":
-            resultado = (n * R * T) / V
-            verificacion = f"P = (n × R × T) / V\n  = ({n} × {R} × {T}) / {V}\n  = {n*R*T:.4f} / {V}\n  = {resultado:.4f} atm"
-        elif calculo == "Volumen (V)":
-            resultado = (n * R * T) / P
-            verificacion = f"V = (n × R × T) / P\n  = ({n} × {R} × {T}) / {P}\n  = {n*R*T:.4f} / {P}\n  = {resultado:.4f} L"
-        elif calculo == "Temperatura (T)":
-            resultado = (P * V) / (n * R)
-            verificacion = f"T = (P × V) / (n × R)\n  = ({P} × {V}) / ({n} × {R})\n  = {P*V:.4f} / {n*R:.4f}\n  = {resultado:.2f} K"
+            formula_utilizada = f"n = (P × V) / (R × T) = ({P} × {V}) / ({R} × {T})"
+        elif opcion == "Presión (P)":
+            resultado = (resultado := (R * T * st.number_input("n (mol)", min_value=0.0, value=1.0)) / V)
+            formula_utilizada = f"P = (n × R × T) / V"
+        elif opcion == "Volumen (V)":
+            resultado = (resultado := (st.number_input("n (mol)", min_value=0.0, value=1.0) * R * T) / P)
+            formula_utilizada = f"V = (n × R × T) / P"
+        elif opcion == "Temperatura (T)":
+            resultado = (resultado := (P * V) / (st.number_input("n (mol)", min_value=0.0, value=1.0) * R))
+            formula_utilizada = f"T = (P × V) / (n × R)"
 
-        st.success(f"✅ Resultado: {resultado:.4f} {calculo[-2:] if calculo != 'Temperatura (T)' else 'K'}")
+        st.success(f"✅ Resultado: {opcion} = {resultado:.4f}")
+
+        # Mostrar botón de verificación
+        if st.button("📘 Resolución detallada del problema"):
+            st.markdown("### 🧪 Paso a paso:")
+            st.code(f"""
+Fórmula utilizada: {formula_utilizada}
+
+Sustituyendo valores:
+  = {resultado:.4f}
+
+Interpreta el resultado según la variable analizada:
+ - Si n: moles de gas presentes en el sistema.
+ - Si P: presión interna generada por el gas.
+ - Si V: volumen necesario.
+ - Si T: temperatura a la que se encuentra el gas.
+""", language="python")
+
     except Exception as e:
         st.error(f"Error en el cálculo: {e}")
-
-if resultado is not None:
-    if st.button("🔍 Verificación detallada"):
-        st.markdown(f"""
-        ### 📄 Verificación Paso a Paso:
-        {verificacion.replace(chr(10), '<br>')}
-        """, unsafe_allow_html=True)
-
-st.markdown("""
----
-📌 **Aplicación militar**: Este cálculo es útil para determinar el oxígeno disponible en cilindros durante operaciones en altura, rescates o maniobras en condiciones extremas.
-""")
